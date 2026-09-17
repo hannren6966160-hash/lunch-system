@@ -16,45 +16,45 @@
     .btn-link { background: #eef5ff; color: #007bff; border: 1px solid #cce5ff; padding: 8px; border-radius: 6px; width: 100%; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 8px; display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
     .lang-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
     .lang-select { width: auto !important; padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 14px; }
-    input, select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+    input, select { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; font-size: 15px; }
     label { display: block; font-size: 15px; cursor: pointer; margin-bottom: 8px; }
     .status-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
     .tag-allow { background: #e8f8f0; color: #07c160; }
     .tag-locked { background: #fdeded; color: #e64340; }
     .tag-pending { background: #fff7e6; color: #ff9800; }
     .rice-option { border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; font-weight: bold; color: #d9534f; }
-    .coop-section { font-weight: bold; color: #e65100; margin: 12px 0 6px 0; border-bottom: 1px solid #ffe0b2; padding-bottom: 4px; }
     .success-card { text-align: center; border-top: 5px solid #07c160; }
     .closed-card { text-align: center; border-top: 5px solid #ff9800; }
     .status-icon { font-size: 48px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
+  <!-- 語言切換選單 (五國語言) -->
   <div class="lang-bar">
     <select id="lang" class="lang-select" onchange="changeLanguage()">
       <option value="zh">繁體中文</option>
       <option value="en">English</option>
-      <option value="id">Bahasa Indonesia</option>
-      <option value="vi">Tiếng Việt</option>
-      <option value="my">မြန်မာ</option>
+      <option value="id">Bahasa Indonesia (印尼文)</option>
+      <option value="vi">Tiếng Việt (越南文)</option>
+      <option value="my">မြန်မာ (緬甸文)</option>
     </select>
   </div>
 
   <div id="app">
-    <div class="card" style="text-align:center;">⏳ 系統快速連線中... / Loading...</div>
+    <div class="card" style="text-align:center;">⏳ 系統連線載入中... / Loading...</div>
   </div>
 
   <script>
     const LIFF_ID = "2011587003-lxtbwXJF";
-    // ⚠️ 請填入第一步複製的 GAS 網頁應用程式網址：
-    const GAS_API_URL = "YOUR_GAS_WEB_APP_URL_HERE";
+    // ⚠️ 請填入第一步在 Google Apps Script 取得的 Web 應用程式網址：
+    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzW4P0Epj5g6f0tC1Khl382RlD115WFWVY68DZ9SEiX52WvuhA0PH8SqpcpIdHHqpv2/exec";
 
     const i18n = {
-      zh: { user: "訂購人", category: "類別", today: "今日", store: "店家", current: "目前已訂購", submit: "提交 / 修改訂單", cancel: "取消今日訂購", selectAlert: "請選擇餐點！", confirmCancel: "確定要取消今日訂單嗎？", regTitle: "身分驗證登入 (僅首次需填)", empId: "工號 (Emp ID)", name: "姓名", bindBtn: "確認登入 / 送出", addRice: "加購白飯 (+$10)", successTitle: "🎉 訂購成功！", reOrder: "修改訂單", closedTitle: "⏰ 目前非開放訂餐時間", closedMsg: "開放訂餐時段：<br><b>請參照系統設定時間</b>", editProfile: "⚙️ 修改個人資料", reqAuth: "申請修改授權 (寄送Email)", backToOrder: "⬅️ 返回訂餐頁面" },
-      en: { user: "User", category: "Category", today: "Today", store: "Store", current: "Current Order", submit: "Submit / Update", cancel: "Cancel Order", selectAlert: "Please select a meal!", confirmCancel: "Are you sure?", regTitle: "Login / Profile", empId: "Employee ID", name: "Name", bindBtn: "Login / Save", addRice: "Add Extra Rice (+$10)", successTitle: "🎉 Order Successful!", reOrder: "Modify Order", closedTitle: "⏰ Closed", closedMsg: "Ordering is currently closed.", editProfile: "⚙️ Edit Profile", reqAuth: "Request Edit Auth", backToOrder: "⬅️ Back" },
-      id: { user: "Pemesan", category: "Kategori", today: "Hari ini", store: "Toko", current: "Pesanan", submit: "Kirim", cancel: "Batalkan", selectAlert: "Pilih makanan!", confirmCancel: "Yakin batal?", regTitle: "Profil", empId: "ID Karyawan", name: "Nama", bindBtn: "Masuk / Simpan", addRice: "Tambah Nasi (+$10)", successTitle: "🎉 Berhasil!", reOrder: "Ubah", closedTitle: "⏰ Ditutup", closedMsg: "Pemesanan ditutup.", editProfile: "⚙️ Ubah Profil", reqAuth: "Minta Izin", backToOrder: "⬅️ Kembali" },
-      vi: { user: "Người đặt", category: "Loại", today: "Hôm nay", store: "Cửa hàng", current: "Đã đặt", submit: "Gửi", cancel: "Hủy", selectAlert: "Chọn món!", confirmCancel: "Chắc chắn hủy?", regTitle: "Hồ sơ", empId: "Mã NV", name: "Tên", bindBtn: "Lưu", addRice: "Thêm cơm (+$10)", successTitle: "🎉 Thành công!", reOrder: "Sửa", closedTitle: "⏰ Đóng cửa", closedMsg: "Đã qua giờ đặt cơm.", editProfile: "⚙️ Sửa Hồ sơ", reqAuth: "Xin quyền", backToOrder: "⬅️ Quay lại" },
-      my: { user: "မှာယူသူ", category: "အမျိုးအစား", today: "ယနေ့", store: "ဆိုင်", current: "မှာထားသည်", submit: "တင်မည်", cancel: "ဖျက်မည်", selectAlert: "ရွေးပါ!", confirmCancel: "သေချာပါသလား?", regTitle: "ကိုယ်ရေးအချက်အလက်", empId: "ဝန်ထမ်းနံပါတ်", name: "အမည်", bindBtn: "သိမ်းမည်", addRice: "ထမင်း (+$10)", successTitle: "🎉 အောင်မြင်ပါသည်!", reOrder: "ပြင်မည်", closedTitle: "⏰ ပိတ်သည်", closedMsg: "မှာယူချိန် ပိတ်ပါသည်", editProfile: "⚙️ ပြင်မည်", reqAuth: "ခွင့်ပြုချက်", backToOrder: "⬅️ နောက်သို့" }
+      zh: { user: "訂購人", category: "類別", today: "今日", store: "店家", current: "目前已訂購", submit: "提交 / 修改訂單", cancel: "取消今日訂購", selectAlert: "請選擇餐點！", confirmCancel: "確定要取消今日訂單嗎？（將自表單刪除）", regTitle: "身分驗證登入 (僅首次需填)", empId: "工號 (Emp ID)", name: "姓名", bindBtn: "確認送出 / 登入", addRice: "加購白飯 (+$10)", successTitle: "🎉 訂購成功！", reOrder: "修改訂單", closedTitle: "⏰ 目前非開放訂餐時間", closedMsg: "開放訂餐時段：<br><b>【中餐】07:00 ~ 09:30</b><br><b>【晚餐】13:00 ~ 15:00</b>", editProfile: "⚙️ 修改個人資料", reqAuth: "申請修改授權 (寄送Email)", backToOrder: "⬅️ 返回訂餐頁面" },
+      en: { user: "User", category: "Category", today: "Today", store: "Store", current: "Current Order", submit: "Submit / Update Order", cancel: "Cancel Today's Order", selectAlert: "Please select a meal!", confirmCancel: "Are you sure to cancel today's order?", regTitle: "Profile Settings", empId: "Employee ID", name: "Name", bindBtn: "Submit / Save", addRice: "Add Extra Rice (+$10)", successTitle: "🎉 Order Successful!", reOrder: "Modify Order", closedTitle: "⏰ Ordering Closed", closedMsg: "Ordering Hours:<br><b>[Lunch] 07:00 ~ 09:30</b><br><b>[Dinner] 13:00 ~ 15:00</b>", editProfile: "⚙️ Edit Profile", reqAuth: "Request Edit Auth", backToOrder: "⬅️ Back to Order" },
+      id: { user: "Pemesan", category: "Kategori", today: "Hari ini", store: "Toko", current: "Pesanan saat ini", submit: "Kirim / Ubah Pesanan", cancel: "Batalkan Pesanan", selectAlert: "Silakan pilih makanan!", confirmCancel: "Yakin ingin membatalkan pesanan hari ini?", regTitle: "Verifikasi Profil (Hanya sekali)", empId: "ID Karyawan", name: "Nama", bindBtn: "Kirim / Masuk", addRice: "Tambah Nasi (+$10)", successTitle: "🎉 Pesanan Berhasil!", reOrder: "Ubah Pesanan", closedTitle: "⏰ Pemesanan Ditutup", closedMsg: "Jam Pemesanan:<br><b>[Makan Siang] 07:00 ~ 09:30</b><br><b>[Makan Malam] 13:00 ~ 15:00</b>", editProfile: "⚙️ Ubah Profil", reqAuth: "Minta Izin Pengeditan", backToOrder: "⬅️ Kembali" },
+      vi: { user: "Người đặt", category: "Loại", today: "Hôm nay", store: "Cửa hàng", current: "Đã đặt", submit: "Gửi / Sửa Đơn hàng", cancel: "Hủy đặt hôm nay", selectAlert: "Vui lòng chọn món!", confirmCancel: "Bạn có chắc muốn hủy đơn đặt cơm hôm nay?", regTitle: "Xác minh thông tin", empId: "Mã NV", name: "Tên", bindBtn: "Gửi / Đăng nhập", addRice: "Thêm cơm (+$10)", successTitle: "🎉 Đặt cơm thành công!", reOrder: "Sửa đơn hàng", closedTitle: "⏰ Đã đóng đặt cơm", closedMsg: "Giờ đặt cơm:<br><b>[Trưa] 07:00 ~ 09:30</b><br><b>[Tối] 13:00 ~ 15:00</b>", editProfile: "⚙️ Sửa thông tin", reqAuth: "Xin quyền sửa", backToOrder: "⬅️ Quay lại" },
+      my: { user: "မှာယူသူ", category: "အမျိုးအစား", today: "ယနေ့", store: "ဆိုင်", current: "လက်ရှိမှာထားသည်", submit: "အတည်ပြုသည် / ပြင်မည်", cancel: "ယနေ့မှာယူမှုဖျက်မည်", selectAlert: "ကျေးဇူးပြု၍ ဟင်းပွဲရွေးပါ!", confirmCancel: "ယနေ့မှာယူမှုကို ဖျက်ရန် သေချာပါသလား?", regTitle: "ကိုယ်ရေးအချက်အလက်", empId: "ဝန်ထမ်းနံပါတ်", name: "အမည်", bindBtn: "သိမ်းမည် / အတည်ပြု", addRice: "ထမင်းထပ်ယူမည် (+$10)", successTitle: "🎉 မှာယူမှု အောင်မြင်ပါသည်!", reOrder: "ပြန်လည်ပြင်ဆင်မည်", closedTitle: "⏰ မှာယူချိန်ပိတ်ပါသည်", closedMsg: "မှာယူနိုင်သည့်အချိန်:<br><b>[နေ့လယ်စာ] 07:00 ~ 09:30</b><br><b>[ညစာ] 13:00 ~ 15:00</b>", editProfile: "⚙️ ကိုယ်ရေးအချက်အလက်ပြင်ရန်", reqAuth: "ခွင့်ပြုချက်တောင်းရန်", backToOrder: "⬅️ နောက်သို့" }
     };
 
     let currentLang = "zh";
@@ -69,7 +69,7 @@
       try { localStorage.setItem("saved_emp_id", id); } catch(e) {}
     }
 
-    // 發送 POST 請求至 GAS API
+    // 發送 POST 請求至 GAS API（標準 Simple Request，無 CORS 預檢限制）
     async function callGasApi(action, data) {
       const response = await fetch(GAS_API_URL, {
         method: "POST",
@@ -82,7 +82,7 @@
       await initLiffApp();
     };
 
-    // 獨立網頁環境初始化 LIFF：iPhone 預設隱私環境下 100% 成功抓取真實 LINE ID
+    // 獨立網頁環境初始化 LIFF：iPhone 100% 順暢直接取得真實 LINE ID
     async function initLiffApp() {
       try {
         await liff.init({ liffId: LIFF_ID });
@@ -93,7 +93,7 @@
         const profile = await liff.getProfile();
         currentLineUserId = profile.userId;
       } catch (err) {
-        console.warn("LIFF Profile 載入跳過:", err);
+        console.warn("LIFF 載入警告:", err);
       }
       fetchBackendData();
     }
@@ -110,8 +110,8 @@
       } catch (err) {
         document.getElementById('app').innerHTML = `
           <div class="card" style="color:red; text-align:center;">
-            ⚠️ 連線伺服器逾時：${err.message}<br><br>
-            <button class="btn" onclick="fetchBackendData()">🔄 點此重新嘗試</button>
+            ⚠️ 連線逾時或伺服器異常：${err.message}<br><br>
+            <button class="btn" onclick="fetchBackendData()">🔄 點此重新連線</button>
           </div>`;
       }
     }
@@ -127,20 +127,19 @@
     function renderProfileForm(isEditMode) {
       const t = i18n[currentLang] || i18n["zh"];
       const u = globalData.user || {};
-      const admins = globalData.adminEmails || [];
-      const editAdminEmail = admins.length > 0 ? admins[0].email : '';
+      const targetAdminEmail = globalData.adminEmail || '';
       const savedEmpId = getStoredEmpId();
-      
+
       const isAllowed = (u.editStatus === "ALLOW");
       const isPending = (u.editStatus === "PENDING");
 
       let statusHtml = "";
       if (isEditMode) {
-        if (isAllowed) statusHtml = `<div class="status-tag tag-allow">🟢 已取得修改授權</div>`;
-        else if (isPending) statusHtml = `<div class="status-tag tag-pending">🟡 審核中（待管理者信件簽核）</div>`;
-        else statusHtml = `<div class="status-tag tag-locked">🔴 資料已鎖定</div>`;
+        if (isAllowed) statusHtml = `<div class="status-tag tag-allow">🟢 已核准修改授權</div>`;
+        else if (isPending) statusHtml = `<div class="status-tag tag-pending">🟡 審核中（待主管信件簽核）</div>`;
+        else statusHtml = `<div class="status-tag tag-locked">🔴 資料已上鎖保護</div>`;
       } else {
-        statusHtml = `<p style="color:#555; font-size:14px;">(若為舊用戶，只需確認工號按下送出，系統將自動完成 LINE 綁定並登入)</p>`;
+        statusHtml = `<p style="color:#555; font-size:13px;">(舊用戶輸入原工號與姓名送出即可自動完成 LINE 帳號綁定)</p>`;
       }
 
       document.getElementById('app').innerHTML = `
@@ -162,10 +161,8 @@
               <option value="2F假日打工">2F假日打工</option>
             </select>
           </label>
-          
-          <input type="hidden" id="targetAdminEmail" value="${editAdminEmail}">
+          <input type="hidden" id="targetAdminEmail" value="${targetAdminEmail}">
           <button class="btn" id="submitBtn" onclick="submitRegister()">${t.bindBtn}</button>
-          
           ${isEditMode ? `
             <button class="btn btn-warning" onclick="requestAuth()" style="margin-top:10px;">${t.reqAuth}</button>
             <button class="btn-link" style="margin-top:10px;" onclick="renderPage(globalData)">${t.backToOrder}</button>
@@ -183,7 +180,7 @@
       if (res.user && res.user.empId) setStoredEmpId(res.user.empId);
 
       if (res.status === "CLOSED") {
-        const closedText = res.dynamicMsg ? res.dynamicMsg : t.closedMsg; 
+        const closedText = res.dynamicMsg ? res.dynamicMsg : t.closedMsg;
         document.getElementById('app').innerHTML = `
           <div class="card">
             <b>${t.user}：</b>${res.user.name} [${res.user.empId}] (${res.user.category || ''})
@@ -214,17 +211,15 @@
 
       if (res.existingOrder) {
         const riceText = res.existingOrder.ricePrice > 0 ? " + 加購白飯($10)" : "";
-        const coopTag = res.existingOrder.isCoop ? "【合作社泡麵】" : "";
         html += `<div class="card" style="border-left: 4px solid #07c160;">
-          <b>${t.current}：</b>${coopTag}${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
+          <b>${t.current}：</b>${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
         </div>`;
       }
 
       if (!res.menu || res.menu.length === 0) {
-        html += `<div class="card"><p>今日無排定店家或菜單品項尚未上架</p></div>`;
+        html += `<div class="card"><p>今日無輪值店家或菜單品項尚未上架</p></div>`;
       } else {
         html += `<div class="card">`;
-        let hasCoopHeader = false;
         res.menu.forEach(m => {
           let itemName = m.item_zh;
           if (currentLang === 'en' && m.item_en) itemName = m.item_en;
@@ -232,14 +227,9 @@
           else if (currentLang === 'vi' && m.item_vi) itemName = m.item_vi;
           else if (currentLang === 'my' && m.item_my) itemName = m.item_my;
 
-          if (m.isCoop && !hasCoopHeader) {
-            html += `<div class="coop-section"><b>🍜 合作社晚餐泡麵套餐：</b></div>`;
-            hasCoopHeader = true;
-          }
-
           html += `
             <label>
-              <input type="radio" name="food" value="${itemName}" data-price="${m.price}" data-iscoop="${m.isCoop ? '1' : '0'}"> 
+              <input type="radio" name="food" value="${itemName}" data-price="${m.price}"> 
               ${itemName} ${m.price > 0 ? '- $' + m.price : ''}
             </label>`;
         });
@@ -271,12 +261,12 @@
 
       if (!payload.empId || !payload.name) {
         if (btn) btn.disabled = false;
-        return alert("請填寫工號與姓名！");
+        return alert("請務必填寫工號與姓名！");
       }
 
       try {
         const r = await callGasApi("registerUser", payload);
-        if (r.status === "OK" || r.status === "NEED_AUTH") {
+        if (r.status === "OK") {
           setStoredEmpId(payload.empId);
           fetchBackendData(payload.empId);
         } else {
@@ -284,7 +274,7 @@
           if (btn) btn.disabled = false;
         }
       } catch(err) {
-        alert("註冊連線失敗：" + err.message);
+        alert("連線失敗：" + err.message);
         if (btn) btn.disabled = false;
       }
     }
@@ -292,8 +282,8 @@
     async function requestAuth() {
       const empId = document.getElementById('regEmpId').value.trim();
       const targetEmail = document.getElementById('targetAdminEmail').value;
-      if (!empId) return alert("請填寫工號才能發送申請！");
-      if (confirm(`確定要向管理員發送修改授權申請信嗎？`)) {
+      if (!empId) return alert("請輸入工號才能發送簽核申請！");
+      if (confirm("確定要向主管發送修改授權申請信嗎？")) {
         const r = await callGasApi("requestEditAuth", { empId, targetEmail });
         alert(r.message);
       }
@@ -306,7 +296,6 @@
 
       const btn = document.getElementById('submitBtn');
       if (btn) btn.disabled = true;
-      const addRiceCheckbox = document.getElementById('addRice');
 
       const payload = {
         mealType: globalData.mealType,
@@ -316,8 +305,7 @@
         storeName: globalData.storeName,
         item: selected.value,
         price: selected.dataset.price,
-        isCoop: selected.dataset.iscoop === "1",
-        addRice: addRiceCheckbox ? addRiceCheckbox.checked : false
+        addRice: document.getElementById('addRice') ? document.getElementById('addRice').checked : false
       };
 
       try {
