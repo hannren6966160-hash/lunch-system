@@ -24,7 +24,6 @@
     .tag-locked { background: #fdeded; color: #e64340; }
     .tag-pending { background: #fff7e6; color: #ff9800; }
     .rice-option { border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; font-weight: bold; color: #d9534f; }
-    .coop-section { font-weight: bold; color: #e65100; margin: 12px 0 6px 0; border-bottom: 1px solid #ffe0b2; padding-bottom: 4px; }
     .success-card { text-align: center; border-top: 5px solid #07c160; }
     .closed-card { text-align: center; border-top: 5px solid #ff9800; }
     .status-icon { font-size: 48px; margin-bottom: 10px; }
@@ -47,10 +46,9 @@
   </div>
 
   <script>
-    // ✅ 已為您歸位：這裡必須是 LINE 的 ID
     const LIFF_ID = "2011587003-lxtbwXJF";
     
-    // ✅ 已為您歸位：這裡才是 Google Apps Script 的網址
+    // ⚠️ 部署至 GitHub 時，請填入 GAS Web 應用程式網址
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzW4P0Epj5g6f0tC1Khl382RlD115WFWVY68DZ9SEiX52WvuhA0PH8SqpcpIdHHqpv2/exec"; 
 
     const i18n = {
@@ -243,9 +241,8 @@
 
       if (res.existingOrder) {
         const riceText = res.existingOrder.ricePrice > 0 ? " + 加購白飯($10)" : "";
-        const coopTag = res.existingOrder.isCoop ? "【合作社泡麵】" : "";
         html += `<div class="card" style="border-left: 4px solid #07c160;">
-          <b>${t.current}：</b>${coopTag}${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
+          <b>${t.current}：</b>${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
         </div>`;
       }
 
@@ -253,7 +250,6 @@
         html += `<div class="card"><p>今日無輪值店家或菜單品項尚未上架</p></div>`;
       } else {
         html += `<div class="card">`;
-        let hasCoopHeader = false;
         res.menu.forEach(m => {
           let itemName = m.item_zh;
           if (currentLang === 'en' && m.item_en) itemName = m.item_en;
@@ -261,14 +257,9 @@
           else if (currentLang === 'vi' && m.item_vi) itemName = m.item_vi;
           else if (currentLang === 'my' && m.item_my) itemName = m.item_my;
 
-          if (m.isCoop && !hasCoopHeader) {
-            html += `<div class="coop-section"><b>🍜 合作社晚餐泡麵套餐：</b></div>`;
-            hasCoopHeader = true;
-          }
-
           html += `
             <label>
-              <input type="radio" name="food" value="${itemName}" data-price="${m.price}" data-iscoop="${m.isCoop ? '1' : '0'}"> 
+              <input type="radio" name="food" value="${itemName}" data-price="${m.price}"> 
               ${itemName} ${m.price > 0 ? '- $' + m.price : ''}
             </label>`;
         });
@@ -355,7 +346,6 @@
         storeName: globalData.storeName,
         item: selected.value,
         price: selected.dataset.price,
-        isCoop: selected.dataset.iscoop === "1",
         addRice: addRiceCb ? addRiceCb.checked : false
       };
 
