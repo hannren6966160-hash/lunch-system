@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>翰仁企業 訂便當系統</title>
+  <!-- 官方 LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; background: #f8f9fa; color: #333; margin: 0; }
@@ -23,6 +24,7 @@
     .tag-locked { background: #fdeded; color: #e64340; }
     .tag-pending { background: #fff7e6; color: #ff9800; }
     .rice-option { border-top: 1px dashed #ccc; padding-top: 10px; margin-top: 10px; font-weight: bold; color: #d9534f; }
+    .coop-section { font-weight: bold; color: #e65100; margin: 12px 0 6px 0; border-bottom: 1px solid #ffe0b2; padding-bottom: 4px; }
     .success-card { text-align: center; border-top: 5px solid #07c160; }
     .closed-card { text-align: center; border-top: 5px solid #ff9800; }
     .status-icon { font-size: 48px; margin-bottom: 10px; }
@@ -45,10 +47,10 @@
   </div>
 
   <script>
-    const LIFF_ID = "2011587003-lxtbwXJF";
+    const LIFF_ID = "https://script.google.com/macros/s/AKfycbzW4P0Epj5g6f0tC1Khl382RlD115WFWVY68DZ9SEiX52WvuhA0PH8SqpcpIdHHqpv2/exec";
     
     // ⚠️ 部署至 GitHub 時，請填入 GAS Web 應用程式網址
-    const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzW4P0Epj5g6f0tC1Khl382RlD115WFWVY68DZ9SEiX52WvuhA0PH8SqpcpIdHHqpv2/exec"; 
+    const GAS_API_URL = "YOUR_GAS_WEB_APP_URL_HERE"; 
 
     const i18n = {
       zh: { user: "訂購人", category: "類別", today: "今日", store: "店家", current: "目前已訂購", submit: "提交 / 修改訂單", cancel: "取消今日訂購", selectAlert: "請選擇餐點！", confirmCancel: "確定要取消今日訂單嗎？（將自表單刪除）", regTitle: "身份設定 / 修改資料", empId: "工號 (Emp ID)", name: "姓名", bindBtn: "確認登入 / 儲存", addRice: "加購白飯 (+$10)", successTitle: "🎉 訂購成功！", reOrder: "修改訂單", closedTitle: "⏰ 目前非開放訂餐時間", closedMsg: "開放訂餐時段：<br><b>【中餐】07:00 ~ 09:30</b><br><b>【晚餐】13:00 ~ 15:00</b>", editProfile: "⚙️ 修改個人資料", reqAuth: "申請修改授權 (寄送Email)", backToOrder: "⬅️ 返回訂餐頁面" },
@@ -71,7 +73,6 @@
       try { localStorage.setItem("saved_emp_id", id); sessionStorage.setItem("saved_emp_id", id); } catch(e) {}
     }
 
-    // 發送 POST 請求至後端
     async function callGasApi(action, data) {
       const response = await fetch(GAS_API_URL, {
         method: "POST",
@@ -83,13 +84,13 @@
     window.onload = function() {
       const savedId = getStoredEmpId();
 
-      // 超時 4 秒保險機制：若 LIFF 卡住，強迫向後端發請求
+      // 保險機制：2.5 秒內若 LIFF 卡住，強迫向後端發請求
       const timer = setTimeout(() => {
         if (!isFetched) {
           currentLineUserId = "TIMEOUT";
           fetchBackendData(savedId || "UNKNOWN");
         }
-      }, 4000);
+      }, 2500);
 
       try {
         if (typeof liff !== "undefined" && LIFF_ID) {
@@ -242,8 +243,9 @@
 
       if (res.existingOrder) {
         const riceText = res.existingOrder.ricePrice > 0 ? " + 加購白飯($10)" : "";
+        const coopTag = res.existingOrder.isCoop ? "【合作社泡麵】" : "";
         html += `<div class="card" style="border-left: 4px solid #07c160;">
-          <b>${t.current}：</b>${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
+          <b>${t.current}：</b>${coopTag}${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
         </div>`;
       }
 
@@ -251,6 +253,7 @@
         html += `<div class="card"><p>今日無輪值店家或菜單品項尚未上架</p></div>`;
       } else {
         html += `<div class="card">`;
+        let hasCoopHeader = false;
         res.menu.forEach(m => {
           let itemName = m.item_zh;
           if (currentLang === 'en' && m.item_en) itemName = m.item_en;
@@ -258,9 +261,14 @@
           else if (currentLang === 'vi' && m.item_vi) itemName = m.item_vi;
           else if (currentLang === 'my' && m.item_my) itemName = m.item_my;
 
+          if (m.isCoop && !hasCoopHeader) {
+            html += `<div class="coop-section"><b>🍜 合作社晚餐泡麵套餐：</b></div>`;
+            hasCoopHeader = true;
+          }
+
           html += `
             <label>
-              <input type="radio" name="food" value="${itemName}" data-price="${m.price}"> 
+              <input type="radio" name="food" value="${itemName}" data-price="${m.price}" data-iscoop="${m.isCoop ? '1' : '0'}"> 
               ${itemName} ${m.price > 0 ? '- $' + m.price : ''}
             </label>`;
         });
@@ -283,6 +291,7 @@
       const btn = document.getElementById('submitBtn');
       if (btn) btn.disabled = true;
 
+      // 再次嘗試獲取真實 LINE ID 以防遺漏
       if (!currentLineUserId || currentLineUserId === "TIMEOUT") {
         try {
           if (typeof liff !== "undefined" && liff.isLoggedIn()) {
@@ -347,6 +356,7 @@
         storeName: globalData.storeName,
         item: selected.value,
         price: selected.dataset.price,
+        isCoop: selected.dataset.iscoop === "1",
         addRice: addRiceCb ? addRiceCb.checked : false
       };
 
