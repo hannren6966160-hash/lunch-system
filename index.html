@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>翰仁企業 訂便當系統</title>
-  <!-- 官方 LINE LIFF SDK -->
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 15px; background: #f8f9fa; color: #333; margin: 0; }
@@ -30,7 +29,7 @@
   </style>
 </head>
 <body>
-  <!-- 五國語言選單 -->
+  <!-- 語言切換選擇列 -->
   <div class="lang-bar">
     <select id="lang" class="lang-select" onchange="changeLanguage()">
       <option value="zh">繁體中文</option>
@@ -48,7 +47,7 @@
   <script>
     const LIFF_ID = "2011587003-lxtbwXJF";
     
-    // ⚠️ 部署至 GitHub 時，請填入 GAS Web 應用程式網址
+    // ⚠️ 部署至 GitHub 時，請填入您最新的 GAS Web 應用程式網址
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbzW4P0Epj5g6f0tC1Khl382RlD115WFWVY68DZ9SEiX52WvuhA0PH8SqpcpIdHHqpv2/exec"; 
 
     const i18n = {
@@ -247,7 +246,7 @@
       }
 
       if (!res.menu || res.menu.length === 0) {
-        html += `<div class="card"><p>今日無輪值店家或菜單品項尚未上架</p></div>`;
+        html += `<div class="card"><p>今日無排定店家或菜單品項尚未上架</p></div>`;
       } else {
         html += `<div class="card">`;
         res.menu.forEach(m => {
