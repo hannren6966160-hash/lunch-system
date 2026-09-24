@@ -49,12 +49,13 @@
     // ⚠️ 請修改為您最新的 Web 應用程式網址！
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbx_MXhZ2pBD3gKWvsH7wkCIaG1DDF9Lr8eeVEjDMNh1gXXL4nc3oUZuxHBc3kwx9D3E/exec"; 
 
+    // 【升級點】將休息時間的文字也加入了多國語言變數 {lunch} 與 {dinner}
     const i18n = {
-      zh: { user: "訂購人", category: "類別", today: "今日", store: "店家", current: "目前已訂購", submit: "提交 / 修改訂單", cancel: "取消今日訂購", selectAlert: "請選擇餐點！", confirmCancel: "確定要取消今日訂單嗎？（將自表單刪除）", regTitle: "身份設定 / 修改資料", empId: "工號 (Emp ID)", name: "姓名", bindBtn: "確認登入 / 儲存", addRice: "加購白飯 (+$10)", successTitle: "🎉 訂購成功！", reOrder: "修改訂單", closedTitle: "⏰ 目前非開放訂餐時間", closedMsg: "開放訂餐時段：<br><b>【中餐】07:00 ~ 09:30</b><br><b>【晚餐】13:00 ~ 15:00</b>", editProfile: "⚙️ 修改個人資料", reqAuth: "申請修改授權 (寄送Email)", backToOrder: "⬅️ 返回訂餐頁面" },
-      en: { user: "User", category: "Category", today: "Today", store: "Store", current: "Current Order", submit: "Submit / Update Order", cancel: "Cancel Today's Order", selectAlert: "Please select a meal!", confirmCancel: "Are you sure you want to cancel today's order?", regTitle: "Profile Settings", empId: "Employee ID", name: "Name", bindBtn: "Submit / Save", addRice: "Add Extra Rice (+$10)", successTitle: "🎉 Order Successful!", reOrder: "Modify Order", closedTitle: "⏰ Ordering Currently Closed", closedMsg: "Ordering Hours:<br><b>[Lunch] 07:00 ~ 09:30</b><br><b>[Dinner] 13:00 ~ 15:00</b>", editProfile: "⚙️ Edit Profile", reqAuth: "Request Edit Auth", backToOrder: "⬅️ Back to Order" },
-      id: { user: "Pemesan", category: "Kategori", today: "Hari ini", store: "Toko", current: "Pesanan saat ini", submit: "Kirim / Ubah Pesanan", cancel: "Batalkan Pesanan", selectAlert: "Silakan pilih makanan!", confirmCancel: "Yakin ingin membatalkan pesanan hari ini?", regTitle: "Verifikasi Profil", empId: "ID Karyawan", name: "Nama", bindBtn: "Kirim / Masuk", addRice: "Tambah Nasi (+$10)", successTitle: "🎉 Pesanan Berhasil!", reOrder: "Ubah Pesanan", closedTitle: "⏰ Pemesanan Ditutup", closedMsg: "Jam Pemesanan:<br><b>[Makan Siang] 07:00 ~ 09:30</b><br><b>[Makan Malam] 13:00 ~ 15:00</b>", editProfile: "⚙️ Ubah Profil", reqAuth: "Minta Izin", backToOrder: "⬅️ Kembali" },
-      vi: { user: "Người đặt", category: "Loại", today: "Hôm nay", store: "Cửa hàng", current: "Đã đặt", submit: "Gửi / Sửa Đơn", cancel: "Hủy đặt hôm nay", selectAlert: "Vui lòng chọn món!", confirmCancel: "Bạn chắc muốn hủy đơn hôm nay?", regTitle: "Hồ sơ", empId: "Mã NV", name: "Tên", bindBtn: "Gửi / Đăng nhập", addRice: "Thêm cơm (+$10)", successTitle: "🎉 Thành công!", reOrder: "Sửa đơn hàng", closedTitle: "⏰ Đã đóng cửa", closedMsg: "Giờ đặt cơm:<br><b>[Trưa] 07:00 ~ 09:30</b><br><b>[Tối] 13:00 ~ 15:00</b>", editProfile: "⚙️ Sửa thông tin", reqAuth: "Xin quyền sửa", backToOrder: "⬅️ Quay lại" },
-      my: { user: "မှာယူသူ", category: "အမျိုးအစား", today: "ယနေ့", store: "ဆိုင်", current: "လက်ရှိမှာထားသည်", submit: "အတည်ပြုသည်", cancel: "ယနေ့မှာယူမှုဖျက်မည်", selectAlert: "ကျေးဇူးပြု၍ ဟင်းပွဲရွေးပါ!", confirmCancel: "ဖျက်ရန် သေချာပါသလား?", regTitle: "ကိုယ်ရေးအချက်အလက်", empId: "ဝန်ထမ်းနံပါတ်", name: "အမည်", bindBtn: "သိမ်းမည် / ဝင်မည်", addRice: "ထမင်း (+$10)", successTitle: "🎉 အောင်မြင်ပါသည်!", reOrder: "ပြင်မည်", closedTitle: "⏰ ပိတ်ပါသည်", closedMsg: "မှာယူနိုင်သည့်အချိန်:<br><b>[နေ့လယ်စာ] 07:00 ~ 09:30</b><br><b>[ညစာ] 13:00 ~ 15:00</b>", editProfile: "⚙️ ပြင်မည်", reqAuth: "ခွင့်ပြုချက်တောင်းရန်", backToOrder: "⬅️ နောက်သို့" }
+      zh: { user: "訂購人", category: "類別", today: "今日", store: "店家", current: "目前已訂購", submit: "提交 / 修改訂單", cancel: "取消今日訂購", selectAlert: "請選擇餐點！", confirmCancel: "確定要取消今日訂單嗎？（將自表單刪除）", regTitle: "身份設定 / 修改資料", empId: "工號 (Emp ID)", name: "姓名", bindBtn: "確認登入 / 儲存", addRice: "加購白飯 (+$10)", successTitle: "🎉 訂購成功！", reOrder: "修改訂單", closedTitle: "⏰ 目前非開放訂餐時間", closedMsg: "開放訂餐時段：<br><b>【中餐】{lunch}</b><br><b>【晚餐】{dinner}</b>", editProfile: "⚙️ 修改個人資料", reqAuth: "申請修改授權 (寄送Email)", backToOrder: "⬅️ 返回訂餐頁面" },
+      en: { user: "User", category: "Category", today: "Today", store: "Store", current: "Current Order", submit: "Submit / Update Order", cancel: "Cancel Today's Order", selectAlert: "Please select a meal!", confirmCancel: "Are you sure you want to cancel today's order?", regTitle: "Profile Settings", empId: "Employee ID", name: "Name", bindBtn: "Submit / Save", addRice: "Add Extra Rice (+$10)", successTitle: "🎉 Order Successful!", reOrder: "Modify Order", closedTitle: "⏰ Ordering Currently Closed", closedMsg: "Ordering Hours:<br><b>[Lunch] {lunch}</b><br><b>[Dinner] {dinner}</b>", editProfile: "⚙️ Edit Profile", reqAuth: "Request Edit Auth", backToOrder: "⬅️ Back to Order" },
+      id: { user: "Pemesan", category: "Kategori", today: "Hari ini", store: "Toko", current: "Pesanan saat ini", submit: "Kirim / Ubah Pesanan", cancel: "Batalkan Pesanan", selectAlert: "Silakan pilih makanan!", confirmCancel: "Yakin ingin membatalkan pesanan hari ini?", regTitle: "Verifikasi Profil", empId: "ID Karyawan", name: "Nama", bindBtn: "Kirim / Masuk", addRice: "Tambah Nasi (+$10)", successTitle: "🎉 Pesanan Berhasil!", reOrder: "Ubah Pesanan", closedTitle: "⏰ Pemesanan Ditutup", closedMsg: "Jam Pemesanan:<br><b>[Makan Siang] {lunch}</b><br><b>[Makan Malam] {dinner}</b>", editProfile: "⚙️ Ubah Profil", reqAuth: "Minta Izin", backToOrder: "⬅️ Kembali" },
+      vi: { user: "Người đặt", category: "Loại", today: "Hôm nay", store: "Cửa hàng", current: "Đã đặt", submit: "Gửi / Sửa Đơn", cancel: "Hủy đặt hôm nay", selectAlert: "Vui lòng chọn món!", confirmCancel: "Bạn chắc muốn hủy đơn hôm nay?", regTitle: "Hồ sơ", empId: "Mã NV", name: "Tên", bindBtn: "Gửi / Đăng nhập", addRice: "Thêm cơm (+$10)", successTitle: "🎉 Thành công!", reOrder: "Sửa đơn hàng", closedTitle: "⏰ Đã đóng cửa", closedMsg: "Giờ đặt cơm:<br><b>[Trưa] {lunch}</b><br><b>[Tối] {dinner}</b>", editProfile: "⚙️ Sửa thông tin", reqAuth: "Xin quyền sửa", backToOrder: "⬅️ Quay lại" },
+      my: { user: "မှာယူသူ", category: "အမျိုးအစား", today: "ယနေ့", store: "ဆိုင်", current: "လက်ရှိမှာထားသည်", submit: "အတည်ပြုသည်", cancel: "ယနေ့မှာယူမှုဖျက်မည်", selectAlert: "ကျေးဇူးပြု၍ ဟင်းပွဲရွေးပါ!", confirmCancel: "ဖျက်ရန် သေချာပါသလား?", regTitle: "ကိုယ်ရေးအချက်အလက်", empId: "ဝန်ထမ်းနံပါတ်", name: "အမည်", bindBtn: "သိမ်းမည် / ဝင်မည်", addRice: "ထမင်း (+$10)", successTitle: "🎉 အောင်မြင်ပါသည်!", reOrder: "ပြင်မည်", closedTitle: "⏰ ပိတ်ပါသည်", closedMsg: "မှာယူနိုင်သည့်အချိန်:<br><b>[နေ့လယ်စာ] {lunch}</b><br><b>[ညစာ] {dinner}</b>", editProfile: "⚙️ ပြင်မည်", reqAuth: "ခွင့်ပြုချက်တောင်းရန်", backToOrder: "⬅️ နောက်သို့" }
     };
 
     let currentLang = "zh";
@@ -62,7 +63,6 @@
     let isFetched = false;
     let currentLineUserId = "";
 
-    // 【新增】全語言智慧比對：去除全半形括號與空白，避免因存檔格式不同造成比對失敗
     function normalizeStr(str) {
       if (!str) return "";
       return String(str).replace(/\s+/g, '').replace(/（/g, '(').replace(/）/g, ')');
@@ -213,8 +213,14 @@
       if (res.status === "NEED_REGISTER") { renderProfileForm(false); return; }
       if (res.user && res.user.empId) setStoredEmpId(res.user.empId);
 
+      // 【修正點 1】處理非營業時間畫面的多國語言動態替換
       if (res.status === "CLOSED") {
-        const closedText = res.dynamicMsg ? res.dynamicMsg : t.closedMsg; 
+        let closedText = t.closedMsg;
+        let lTime = res.lunchTime || "07:00 ~ 09:30";
+        let dTime = res.dinnerTime || "13:00 ~ 15:00";
+        // 動態替換時間變數
+        closedText = closedText.replace("{lunch}", lTime).replace("{dinner}", dTime);
+
         document.getElementById('app').innerHTML = `
           <div class="card">
             <b>${t.user}：</b>${res.user.name} [${res.user.empId}] (${res.user.category || ''})
@@ -234,21 +240,29 @@
         return;
       }
 
+      // 【修正點 2】處理上方大標題「中/晚餐」的多國語言動態替換
+      const mealTrans = {
+        "中餐": { zh: "中餐", en: " Lunch ", id: " Makan Siang ", vi: " Trưa ", my: " နေ့လယ်စာ " },
+        "晚餐": { zh: "晚餐", en: " Dinner ", id: " Makan Malam ", vi: " Tối ", my: " ညစာ " }
+      };
+      let mealTypeLocal = res.mealType;
+      if (mealTrans[res.mealType] && mealTrans[res.mealType][currentLang]) {
+        mealTypeLocal = mealTrans[res.mealType][currentLang];
+      }
+
       let categoryInfo = res.user.category ? ` (${res.user.category})` : '';
       let html = `
         <div class="card">
           <b>${t.user}：</b>${res.user.name} [${res.user.empId}]${categoryInfo}
           <button class="btn-link" onclick="renderProfileForm(true)">${t.editProfile}</button>
         </div>
-        <h3>${t.today}${res.mealType}${t.store}：${res.storeName}</h3>
+        <h3>${t.today}${mealTypeLocal}${t.store}：${res.storeName}</h3>
       `;
 
-      // 1. 處理已點訂單的動態翻譯 (強化全語言比對：不管資料庫存的是哪一國語言，都能反查出來)
       if (res.existingOrder) {
         let orderedItemName = res.existingOrder.item; 
         if (res.menu && res.menu.length > 0) {
           const orderedNorm = normalizeStr(res.existingOrder.item);
-          // 掃描全部語言欄位進行比對
           const matchedItem = res.menu.find(m => 
             normalizeStr(m.item_zh) === orderedNorm || 
             normalizeStr(m.item_en) === orderedNorm || 
@@ -258,7 +272,6 @@
           );
           
           if (matchedItem) {
-            // 找到後，依據當前選擇的語言顯示對應的名稱
             if (currentLang === 'zh') orderedItemName = matchedItem.item_zh;
             else if (currentLang === 'en' && matchedItem.item_en) orderedItemName = matchedItem.item_en;
             else if (currentLang === 'id' && matchedItem.item_id) orderedItemName = matchedItem.item_id;
@@ -278,7 +291,6 @@
         </div>`;
       }
 
-      // 2. 菜單列表處理
       if (!res.menu || res.menu.length === 0) {
         html += `<div class="card"><p>今日無排定店家或菜單品項尚未上架</p></div>`;
       } else {
@@ -292,7 +304,6 @@
 
           html += `
             <label>
-              <!-- value 永遠傳遞中文給後端 -->
               <input type="radio" name="food" value="${m.item_zh}" data-price="${m.price}"> 
               ${displayName} ${m.price > 0 ? '- $' + m.price : ''}
             </label>`;
@@ -397,7 +408,7 @@
       }
     }
 
-    // 3. 處理點餐成功畫面的動態翻譯 (強化全語言比對)
+    // 【修正點 3】處理點餐成功畫面的中/晚餐翻譯
     function showSuccessCard(detail) {
       const t = i18n[currentLang] || i18n["zh"];
       
@@ -427,11 +438,20 @@
         riceDesc = ` <span style="color:#d9534f; font-weight:bold;">(+ ${cleanRiceText})</span>`;
       }
       
+      const mealTrans = {
+        "中餐": { zh: "中餐", en: "Lunch", id: "Makan Siang", vi: "Trưa", my: "နေ့လယ်စာ" },
+        "晚餐": { zh: "晚餐", en: "Dinner", id: "Makan Malam", vi: "Tối", my: "ညစာ" }
+      };
+      let mealTypeLocal = detail.mealType;
+      if (mealTrans[detail.mealType] && mealTrans[detail.mealType][currentLang]) {
+        mealTypeLocal = mealTrans[detail.mealType][currentLang];
+      }
+
       document.getElementById('app').innerHTML = `
         <div class="card success-card">
           <div class="status-icon" style="color:#07c160;">✓</div>
           <h2>${t.successTitle}</h2>
-          <p><b>${t.store}：</b>${detail.storeName} (${detail.mealType})</p>
+          <p><b>${t.store}：</b>${detail.storeName} (${mealTypeLocal})</p>
           <p><b>餐點品項：</b>${displayItem}${riceDesc}</p>
           <p><b>合計金額：</b>$${detail.total}</p>
           <hr style="border: none; border-top: 1px #eee solid; margin: 15px 0;">
