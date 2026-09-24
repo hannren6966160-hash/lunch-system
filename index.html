@@ -62,7 +62,7 @@
     let isFetched = false;
     let currentLineUserId = "";
 
-    // 智慧比對：去除全半形括號與空白，避免比對失敗
+    // 【新增】全語言智慧比對：去除全半形括號與空白，避免因存檔格式不同造成比對失敗
     function normalizeStr(str) {
       if (!str) return "";
       return String(str).replace(/\s+/g, '').replace(/（/g, '(').replace(/）/g, ')');
@@ -243,15 +243,24 @@
         <h3>${t.today}${res.mealType}${t.store}：${res.storeName}</h3>
       `;
 
-      // 1. 處理已點訂單的動態翻譯 (加入 normalize 智慧除錯比對)
+      // 1. 處理已點訂單的動態翻譯 (強化全語言比對：不管資料庫存的是哪一國語言，都能反查出來)
       if (res.existingOrder) {
-        let orderedItemName = res.existingOrder.item;
+        let orderedItemName = res.existingOrder.item; 
         if (res.menu && res.menu.length > 0) {
           const orderedNorm = normalizeStr(res.existingOrder.item);
-          const matchedItem = res.menu.find(m => normalizeStr(m.item_zh) === orderedNorm);
+          // 掃描全部語言欄位進行比對
+          const matchedItem = res.menu.find(m => 
+            normalizeStr(m.item_zh) === orderedNorm || 
+            normalizeStr(m.item_en) === orderedNorm || 
+            normalizeStr(m.item_id) === orderedNorm || 
+            normalizeStr(m.item_vi) === orderedNorm || 
+            normalizeStr(m.item_my) === orderedNorm
+          );
           
           if (matchedItem) {
-            if (currentLang === 'en' && matchedItem.item_en) orderedItemName = matchedItem.item_en;
+            // 找到後，依據當前選擇的語言顯示對應的名稱
+            if (currentLang === 'zh') orderedItemName = matchedItem.item_zh;
+            else if (currentLang === 'en' && matchedItem.item_en) orderedItemName = matchedItem.item_en;
             else if (currentLang === 'id' && matchedItem.item_id) orderedItemName = matchedItem.item_id;
             else if (currentLang === 'vi' && matchedItem.item_vi) orderedItemName = matchedItem.item_vi;
             else if (currentLang === 'my' && matchedItem.item_my) orderedItemName = matchedItem.item_my;
@@ -388,17 +397,24 @@
       }
     }
 
-    // 3. 處理點餐成功畫面的動態翻譯 (加入 normalize 智慧除錯比對)
+    // 3. 處理點餐成功畫面的動態翻譯 (強化全語言比對)
     function showSuccessCard(detail) {
       const t = i18n[currentLang] || i18n["zh"];
       
       let displayItem = detail.item;
       if (globalData && globalData.menu) {
         const detailNorm = normalizeStr(detail.item);
-        const matched = globalData.menu.find(m => normalizeStr(m.item_zh) === detailNorm);
+        const matched = globalData.menu.find(m => 
+          normalizeStr(m.item_zh) === detailNorm || 
+          normalizeStr(m.item_en) === detailNorm || 
+          normalizeStr(m.item_id) === detailNorm || 
+          normalizeStr(m.item_vi) === detailNorm || 
+          normalizeStr(m.item_my) === detailNorm
+        );
         
         if (matched) {
-          if (currentLang === 'en' && matched.item_en) displayItem = matched.item_en;
+          if (currentLang === 'zh') displayItem = matched.item_zh;
+          else if (currentLang === 'en' && matched.item_en) displayItem = matched.item_en;
           else if (currentLang === 'id' && matched.item_id) displayItem = matched.item_id;
           else if (currentLang === 'vi' && matched.item_vi) displayItem = matched.item_vi;
           else if (currentLang === 'my' && matched.item_my) displayItem = matched.item_my;
