@@ -29,7 +29,6 @@
   </style>
 </head>
 <body>
-  <!-- 語言切換選擇列 -->
   <div class="lang-bar">
     <select id="lang" class="lang-select" onchange="changeLanguage()">
       <option value="zh">繁體中文</option>
@@ -47,7 +46,7 @@
   <script>
     const LIFF_ID = "2011587003-lxtbwXJF";
     
-    // ⚠️ 部署至 GitHub 時，請填入您最新的 GAS Web 應用程式網址
+    // ⚠️ 請修改為您最新的 Web 應用程式網址！
     const GAS_API_URL = "https://script.google.com/macros/s/AKfycbx_MXhZ2pBD3gKWvsH7wkCIaG1DDF9Lr8eeVEjDMNh1gXXL4nc3oUZuxHBc3kwx9D3E/exec"; 
 
     const i18n = {
@@ -62,6 +61,12 @@
     let globalData = {};
     let isFetched = false;
     let currentLineUserId = "";
+
+    // 智慧比對：去除全半形括號與空白，避免比對失敗
+    function normalizeStr(str) {
+      if (!str) return "";
+      return String(str).replace(/\s+/g, '').replace(/（/g, '(').replace(/）/g, ')');
+    }
 
     function getStoredEmpId() {
       try { return localStorage.getItem("saved_emp_id") || sessionStorage.getItem("saved_emp_id") || ""; } catch(e) { return ""; }
@@ -238,11 +243,13 @@
         <h3>${t.today}${res.mealType}${t.store}：${res.storeName}</h3>
       `;
 
-     if (res.existingOrder) {
-        // 1. 動態比對並翻譯已訂購的餐點名稱
+      // 1. 處理已點訂單的動態翻譯 (加入 normalize 智慧除錯比對)
+      if (res.existingOrder) {
         let orderedItemName = res.existingOrder.item;
         if (res.menu && res.menu.length > 0) {
-          const matchedItem = res.menu.find(m => m.item_zh === res.existingOrder.item);
+          const orderedNorm = normalizeStr(res.existingOrder.item);
+          const matchedItem = res.menu.find(m => normalizeStr(m.item_zh) === orderedNorm);
+          
           if (matchedItem) {
             if (currentLang === 'en' && matchedItem.item_en) orderedItemName = matchedItem.item_en;
             else if (currentLang === 'id' && matchedItem.item_id) orderedItemName = matchedItem.item_id;
@@ -250,8 +257,7 @@
             else if (currentLang === 'my' && matchedItem.item_my) orderedItemName = matchedItem.item_my;
           }
         }
-
-        // 2. 動態翻譯加購白飯文字 (萃取各國語言的 "加購白飯" 詞彙)
+        
         let riceText = "";
         if (res.existingOrder.ricePrice > 0) {
           const cleanRiceText = t.addRice.split(" (")[0]; 
@@ -263,21 +269,23 @@
         </div>`;
       }
 
+      // 2. 菜單列表處理
       if (!res.menu || res.menu.length === 0) {
         html += `<div class="card"><p>今日無排定店家或菜單品項尚未上架</p></div>`;
       } else {
         html += `<div class="card">`;
         res.menu.forEach(m => {
-          let itemName = m.item_zh;
-          if (currentLang === 'en' && m.item_en) itemName = m.item_en;
-          else if (currentLang === 'id' && m.item_id) itemName = m.item_id;
-          else if (currentLang === 'vi' && m.item_vi) itemName = m.item_vi;
-          else if (currentLang === 'my' && m.item_my) itemName = m.item_my;
+          let displayName = m.item_zh;
+          if (currentLang === 'en' && m.item_en) displayName = m.item_en;
+          else if (currentLang === 'id' && m.item_id) displayName = m.item_id;
+          else if (currentLang === 'vi' && m.item_vi) displayName = m.item_vi;
+          else if (currentLang === 'my' && m.item_my) displayName = m.item_my;
 
           html += `
             <label>
-              <input type="radio" name="food" value="${itemName}" data-price="${m.price}"> 
-              ${itemName} ${m.price > 0 ? '- $' + m.price : ''}
+              <!-- value 永遠傳遞中文給後端 -->
+              <input type="radio" name="food" value="${m.item_zh}" data-price="${m.price}"> 
+              ${displayName} ${m.price > 0 ? '- $' + m.price : ''}
             </label>`;
         });
 
@@ -380,15 +388,35 @@
       }
     }
 
+    // 3. 處理點餐成功畫面的動態翻譯 (加入 normalize 智慧除錯比對)
     function showSuccessCard(detail) {
       const t = i18n[currentLang] || i18n["zh"];
-      const riceDesc = detail.ricePrice > 0 ? ` + 白飯($${detail.ricePrice})` : "";
+      
+      let displayItem = detail.item;
+      if (globalData && globalData.menu) {
+        const detailNorm = normalizeStr(detail.item);
+        const matched = globalData.menu.find(m => normalizeStr(m.item_zh) === detailNorm);
+        
+        if (matched) {
+          if (currentLang === 'en' && matched.item_en) displayItem = matched.item_en;
+          else if (currentLang === 'id' && matched.item_id) displayItem = matched.item_id;
+          else if (currentLang === 'vi' && matched.item_vi) displayItem = matched.item_vi;
+          else if (currentLang === 'my' && matched.item_my) displayItem = matched.item_my;
+        }
+      }
+
+      let riceDesc = "";
+      if (detail.ricePrice > 0) {
+        const cleanRiceText = t.addRice.split(" (")[0]; 
+        riceDesc = ` <span style="color:#d9534f; font-weight:bold;">(+ ${cleanRiceText})</span>`;
+      }
+      
       document.getElementById('app').innerHTML = `
         <div class="card success-card">
           <div class="status-icon" style="color:#07c160;">✓</div>
           <h2>${t.successTitle}</h2>
           <p><b>${t.store}：</b>${detail.storeName} (${detail.mealType})</p>
-          <p><b>餐點品項：</b>${detail.item}${riceDesc}</p>
+          <p><b>餐點品項：</b>${displayItem}${riceDesc}</p>
           <p><b>合計金額：</b>$${detail.total}</p>
           <hr style="border: none; border-top: 1px #eee solid; margin: 15px 0;">
           <button class="btn" onclick="isFetched=false; fetchBackendData(globalData.user.empId)">${t.reOrder}</button>
