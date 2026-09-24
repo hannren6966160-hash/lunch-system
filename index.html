@@ -238,10 +238,28 @@
         <h3>${t.today}${res.mealType}${t.store}：${res.storeName}</h3>
       `;
 
-      if (res.existingOrder) {
-        const riceText = res.existingOrder.ricePrice > 0 ? " + 加購白飯($10)" : "";
+     if (res.existingOrder) {
+        // 1. 動態比對並翻譯已訂購的餐點名稱
+        let orderedItemName = res.existingOrder.item;
+        if (res.menu && res.menu.length > 0) {
+          const matchedItem = res.menu.find(m => m.item_zh === res.existingOrder.item);
+          if (matchedItem) {
+            if (currentLang === 'en' && matchedItem.item_en) orderedItemName = matchedItem.item_en;
+            else if (currentLang === 'id' && matchedItem.item_id) orderedItemName = matchedItem.item_id;
+            else if (currentLang === 'vi' && matchedItem.item_vi) orderedItemName = matchedItem.item_vi;
+            else if (currentLang === 'my' && matchedItem.item_my) orderedItemName = matchedItem.item_my;
+          }
+        }
+
+        // 2. 動態翻譯加購白飯文字 (萃取各國語言的 "加購白飯" 詞彙)
+        let riceText = "";
+        if (res.existingOrder.ricePrice > 0) {
+          const cleanRiceText = t.addRice.split(" (")[0]; 
+          riceText = ` <span style="color:#d9534f; font-weight:bold;">(+ ${cleanRiceText})</span>`;
+        }
+
         html += `<div class="card" style="border-left: 4px solid #07c160;">
-          <b>${t.current}：</b>${res.existingOrder.item} ($${res.existingOrder.price})${riceText}
+          <b>${t.current}：</b>${orderedItemName} ($${res.existingOrder.price})${riceText}
         </div>`;
       }
 
