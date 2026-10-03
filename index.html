@@ -173,6 +173,7 @@
 
       const inputState = (isEditMode && !isAllowed) ? 'disabled' : '';
 
+      // 【前端防呆】只有在「非審核中且非已授權」的狀態下，才會顯示申請按鈕
       document.getElementById('app').innerHTML = `
         <div class="card">
           <h3>${isEditMode ? t.editProfile : t.regTitle}</h3>
@@ -200,7 +201,7 @@
           <button class="btn" id="submitBtn" onclick="submitRegister()">${t.bindBtn}</button>
           
           ${isEditMode ? `
-            <button class="btn btn-warning" onclick="requestAuth()" style="margin-top:10px;">${t.reqAuth}</button>
+            ${(!isAllowed && !isPending) ? `<button class="btn btn-warning" onclick="requestAuth()" style="margin-top:10px;">${t.reqAuth}</button>` : ''}
             <button class="btn-link" style="margin-top:10px;" onclick="renderPage(globalData)">${t.backToOrder}</button>
           ` : ''}
         </div>
@@ -360,7 +361,7 @@
         if (r.status === "OK" || r.status === "NEED_AUTH") {
           setStoredEmpId(payload.empId);
           isFetched = false;
-          fetchBackendData(payload.empId);
+          fetchBackendData(payload.empId); // 儲存完畢後會重刷畫面，狀態回歸 LOCKED
         } else {
           if (btn) btn.disabled = false;
         }
@@ -370,13 +371,22 @@
       }
     }
 
+    // 【防連點升級】請求授權並自動重刷畫面以隱藏按鈕
     async function requestAuth() {
       const empId = document.getElementById('regEmpId').value.trim();
       const targetEmail = document.getElementById('targetAdminEmail').value;
       if (!empId) return alert("請輸入工號才能發送簽核申請！");
+      
       if (confirm(`確定要向管理員發送修改授權申請信嗎？`)) {
+        const btn = document.querySelector('.btn-warning');
+        if (btn) btn.disabled = true; // 點擊瞬間立刻鎖死按鈕
+
         const r = await callGasApi("requestEditAuth", { empId, targetEmail });
         alert(r.message);
+        
+        // 請求完立刻重刷畫面，取得最新的 PENDING 狀態以隱藏申請按鈕
+        isFetched = false;
+        fetchBackendData(empId);
       }
     }
 
