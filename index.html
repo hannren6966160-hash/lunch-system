@@ -173,7 +173,6 @@
 
       const inputState = (isEditMode && !isAllowed) ? 'disabled' : '';
 
-      // 【前端防呆】只有在「非審核中且非已授權」的狀態下，才會顯示申請按鈕
       document.getElementById('app').innerHTML = `
         <div class="card">
           <h3>${isEditMode ? t.editProfile : t.regTitle}</h3>
@@ -215,6 +214,18 @@
 
       if (res.status === "NEED_REGISTER") { renderProfileForm(false); return; }
       if (res.user && res.user.empId) setStoredEmpId(res.user.empId);
+
+      // 【新增的離職紅色警告畫面】
+      if (res.status === "RESIGNED") {
+        document.getElementById('app').innerHTML = `
+          <div class="card closed-card" style="border-top: 5px solid #e64340;">
+            <div class="status-icon" style="color:#e64340;">⛔</div>
+            <h2 style="color:#e64340;">系統權限已關閉</h2>
+            <p style="margin-top:15px; line-height: 1.8;">${res.message}</p>
+          </div>
+        `;
+        return;
+      }
 
       if (res.status === "CLOSED") {
         let closedText = t.closedMsg;
@@ -361,7 +372,7 @@
         if (r.status === "OK" || r.status === "NEED_AUTH") {
           setStoredEmpId(payload.empId);
           isFetched = false;
-          fetchBackendData(payload.empId); // 儲存完畢後會重刷畫面，狀態回歸 LOCKED
+          fetchBackendData(payload.empId); 
         } else {
           if (btn) btn.disabled = false;
         }
@@ -371,7 +382,6 @@
       }
     }
 
-    // 【防連點升級】請求授權並自動重刷畫面以隱藏按鈕
     async function requestAuth() {
       const empId = document.getElementById('regEmpId').value.trim();
       const targetEmail = document.getElementById('targetAdminEmail').value;
@@ -379,12 +389,11 @@
       
       if (confirm(`確定要向管理員發送修改授權申請信嗎？`)) {
         const btn = document.querySelector('.btn-warning');
-        if (btn) btn.disabled = true; // 點擊瞬間立刻鎖死按鈕
+        if (btn) btn.disabled = true; 
 
         const r = await callGasApi("requestEditAuth", { empId, targetEmail });
         alert(r.message);
         
-        // 請求完立刻重刷畫面，取得最新的 PENDING 狀態以隱藏申請按鈕
         isFetched = false;
         fetchBackendData(empId);
       }
